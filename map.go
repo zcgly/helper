@@ -18,14 +18,14 @@ func StructToMap(item any, fields []string, otherFields ...string) map[string]an
 	for i := 0; i < v.NumField(); i++ {
 		ft := t.Field(i)
 		key := ft.Name
-		if !slices.Contains(fields, key) {
-			continue
+		jsonTag := ft.Tag.Get("json")
+		if slices.Contains(fields, jsonTag) || slices.Contains(fields, key) {
+			if jsonTag != "" {
+				key = jsonTag
+			}
+			value := v.Field(i).Interface()
+			ret[key] = value
 		}
-		if jsonTag := ft.Tag.Get("json"); jsonTag != "" {
-			key = jsonTag
-		}
-		value := v.Field(i).Interface()
-		ret[key] = value
 	}
 	return ret
 }
